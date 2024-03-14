@@ -1,0 +1,60 @@
+Program.Sub.Preflight.Start
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'by Josh Withrow for Square Deal Mfg.
+'2019-11-14
+
+Function.Intrinsic.Control.SelectCase(V.Caller.Hook)
+	
+	Function.Intrinsic.Control.Case(12010)
+		'Let's expose and place some hidden screen controls.
+		
+		'Label
+		F.Intrinsic.Variable.SetProperty("GAB-LBL-1","PL",280)
+		F.Intrinsic.Variable.SetProperty("GAB-LBL-1","PT",205)
+		F.Intrinsic.Variable.SetProperty("GAB-LBL-1","PH",12)
+		F.Intrinsic.UI.ChangeCallerProperty(V.Passed.GAB-LBL-1,"HIDE",0)
+		V.Passed.GAB-LBL-1.Set("Part Extra Description")
+		
+		'Memo Field
+		F.Intrinsic.Variable.SetProperty("GAB-MEMO-1","PL",280)
+		F.Intrinsic.Variable.SetProperty("GAB-MEMO-1","PT",220)
+		F.Intrinsic.Variable.SetProperty("GAB-MEMO-1","PH",80)
+		F.Intrinsic.Variable.SetProperty("GAB-MEMO-1","PW",235)
+		F.Intrinsic.UI.ChangeCallerProperty(V.Passed.GAB-MEMO-1,"HIDE",0)
+		F.Intrinsic.UI.ChangeCallerProperty(V.Passed.GAB-MEMO-1,"LOCK",0)
+	
+	Function.Intrinsic.Control.Case(12045)
+		'Load the Extra Description whenever a part is chosen/changed, or when a line is loaded.
+		Function.Intrinsic.Control.CallSub(loaddata)
+	
+	Function.Intrinsic.Control.Case(12705)
+		'Load the Extra Description whenever a part is chosen/changed, or when a line is loaded.
+		Function.Intrinsic.Control.CallSub(loaddata)
+	
+	Function.Intrinsic.Control.CaseElse
+		'WHO CALLED ME?!
+Function.Intrinsic.Control.EndSelect
+
+Program.Sub.Main.End
+
+Program.Sub.LoadData.Start
+'Load Extra Desc
+V.Local.sPart.Declare(String)		
+V.Local.sExtraDesc.Declare(String)
+V.Local.sSQL.Declare(String)
+
+Function.Intrinsic.String.GSSPartString(V.Passed.000052,V.Passed.000053,V.Local.sPart)
+
+F.Intrinsic.String.Build("SELECT TOP 1 TEXT FROM INV_EXTRA_TEXT WHERE PART='{0}'",V.Local.sPart,V.Local.sSQL)
+F.ODBC.Connection!Conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+F.ODBC.Connection!Conx.ExecuteAndReturn(V.Local.sSQL,V.Local.sExtraDesc)
+F.ODBC.Connection!Conx.Close
+V.Passed.GAB-MEMO-1.Set(V.Local.sExtraDesc)
+Program.Sub.LoadData.End
+
+Program.Sub.Comments.Start
+${$0$}$GCG_SquareDeal_SOLine_LoadExtraDesc.g2u$}$JWITHROW$}$11/14/2019 8:46:13 AM$}$False
+Program.Sub.Comments.End
